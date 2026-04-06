@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiverProTECHt Dashboard</title>
+    <style>
+    body {
+        margin: 0;
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center; /* Centers the whole grid */
+        background-color: #f0f2f5; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* This container creates the 2-column layout */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px; 
+        max-width: 800px;
+    }
+
+    .monitor-card-1 {
+        background-color: #ffffff;
+        width: 300px;
+        padding: 25px;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        border-top: 8px solid #007AFF;
+    }
+
+    /* This makes the 5th card center itself under the other two pairs */
+    .monitor-card-1:last-child:nth-child(odd) {
+        grid-column: span 2;
+        justify-self: center;
+    }
+
+    h2 { margin: 0; color: #444; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+    .reading { font-size: 3.5rem; font-weight: bold; color: #222; margin: 15px 0; }
+    .unit { font-size: 1.2rem; color: #888; }
+    .status { margin-top: 15px; font-size: 0.8rem; color: #27ae60; font-weight: 600; }
+</style>
+</head>
+<body>
+    <div class="dashboard-grid">
+    <div class="monitor-card-1">
+        <h2>Hepatic Arterial Pressure</h2>
+        <div class="reading" id="hepatic-pressure">--</div>
+        <div class="unit">mmHg</div>
+        <div class="status">● SYSTEM NOMINAL</div>
+    </div>
+    <div class="monitor-card-1">
+        <h2>Portal Venous Pressure</h2>
+        <div class="reading" id="portal-pressure">--</div>
+        <div class="unit">mmHg</div>
+        <div class="status">● SYSTEM NOMINAL</div>
+    </div>
+    <div class="monitor-card-1">
+        <h2>Oxygen Levels</h2>
+        <div class="reading" id="oxygen-levels">--</div>
+        <div class="unit">%</div>
+        <div class="status">● SYSTEM NOMINAL</div>
+    </div>
+    <div class="monitor-card-1">
+        <h2>Liver Temperature</h2>
+        <div class="reading" id="liver-temperature">--</div>
+        <div class="unit">°C</div>
+        <div class="status">● SYSTEM NOMINAL</div>
+    </div>
+    <div class="monitor-card-1">
+        <h2>Perfusate pH</h2>
+        <div class="reading" id="perfusate-ph">--</div>
+        <div class="unit">pH</div>
+        <div class="status">● SYSTEM NOMINAL</div>
+    </div>
+    </div>
+
+    <script>
+        // This function asks the ESP32 for data every 1 second
+        function updateData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // This updates the number inside the 'hepatic-pressure' div
+                    document.getElementById('hepatic-pressure').innerText = data.hepatic_pressure;
+                    // This updates the number inside the 'portal-pressure' div
+                    document.getElementById('portal-pressure').innerText = data.portal_pressure;
+                    // This updates the number inside the 'oxygen-levels' div
+                    document.getElementById('oxygen-levels').innerText = data.oxygen_levels;
+                    // This updates the number inside the 'liver-temperature' div
+                    document.getElementById('liver-temperature').innerText = data.liver_temperature;
+                    // This updates the number inside the 'perfusate-ph' div
+                    document.getElementById('perfusate-ph').innerText = data.perfusate_ph;
+                })
+                .catch(err => console.log("Waiting for ESP32..."));
+        }
+
+        setInterval(updateData, 1000);
+    </script>
+
+</body>
+</html>
