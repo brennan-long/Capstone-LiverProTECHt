@@ -1,11 +1,11 @@
-# 🏥 LiverProTECHt Dashboard
+# LiverProTECHt Dashboard
 **BMED 4602 | Capstone Project**
 
 A real-time monitoring interface for ex-vivo liver perfusion. This system connects an ESP32 microcontroller to a web-based dashboard to track organ viability.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 * **/app**: Contains `index.html`. This is the visual "Frontend" of the project.
 * **/firmware**: Contains the PlatformIO project.
     * `src/main.cpp`: The "Backend" logic (Wi-Fi setup, sensor reading, and web server).
@@ -13,7 +13,7 @@ A real-time monitoring interface for ex-vivo liver perfusion. This system connec
 
 ---
 
-## 🛠️ Setup Instructions
+## Setup Instructions
 
 ### 1. Visual Development (The App)
 To edit the dashboard's look without needing the hardware:
@@ -30,7 +30,7 @@ To put the code on the ESP32:
 
 ---
 
-## 📡 Wireless Connection
+## Wireless Connection
 Once the ESP32 is powered on:
 1.  Connect your device to Wi-Fi: **Liver-Monitor-A06**
 2.  Password: **perfusion-tech**
@@ -38,7 +38,7 @@ Once the ESP32 is powered on:
 
 ---
 
-## 📊 Monitored Parameters
+## Monitored Parameters
 | Parameter | Unit | Description |
 | :--- | :--- | :--- |
 | **Hepatic Pressure** | mmHg | Arterial inflow pressure |
@@ -49,7 +49,7 @@ Once the ESP32 is powered on:
 
 ---
 
-## 🏗️ Technologies Used
+## Technologies Used
 * **C++ / Arduino**: Firmware logic.
 * **HTML5 / CSS3 (Grid)**: Dashboard layout.
 * **JavaScript**: Real-time data fetching (Asynchronous).
