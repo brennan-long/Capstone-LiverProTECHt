@@ -1,174 +1,201 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LiverProTECHt Dashboard</title>
-    <style>
-    body {
-        margin: 0;
-        padding: 40px 20px;
-        display: flex;
-        justify-content: center;
-        background-color: #f0f2f5; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .dashboard-grid {
-        display: grid;
-        justify-content: center;
-        grid-template-columns: repeat(3, 300px); /* Fixed width for better centering */
-        gap: 25px; 
-        max-width: 1000px;
-    }
-
-    /* Added 'cursor: pointer' and 'transition' to make them feel like buttons */
-    .monitor-card-1 {
-        background-color: #ffffff;
-        width: 300px;
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        border-top: 8px solid #007AFF;
-        cursor: pointer;
-        transition: transform 0.1s, box-shadow 0.1s;
-        box-sizing: border-box;
-    }
-
-    /* Button hover effect */
-    .monitor-card-1:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Button "click" effect */
-    .monitor-card-1:active {
-        transform: translateY(0px);
-        background-color: #f9f9f9;
-    }
-
-    .monitor-card-2 {
-        background-color: #ffffff;
-        width: 100%; /* Spans across 3 columns */
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        border-top: 8px solid #bb00ff;
-        box-sizing: border-box;
-    }
-    .monitor-card-3 {
-        background-color: #ffffff;
-        width: 300px;
-        padding: 25px;
-        border-radius: 20px;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        border-top: 8px solid #ff00ff;
-        box-sizing: border-box;
-    }
-
-    h2 { margin: 0; color: #444; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
-    .reading { font-size: 3.5rem; font-weight: bold; color: #222; margin: 15px 0; }
-    .unit { font-size: 1.2rem; color: #888; }
-    .status { margin-top: 15px; font-size: 0.8rem; color: #27ae60; font-weight: 600; }
-    
-    /* ID for the Bile title so we can change it */
-    #bile-title { color: #000000; font-weight: bold; }
-</style>
-</head>
-<body>
-    <div class="dashboard-grid">
-    <div class="monitor-card-1" onclick="changeBileTitle('Hepatic Arterial Pressure')">
-        <h2>Hepatic Arterial Pressure</h2>
-        <div class="reading" id="hepatic-pressure">100</div>
-        <div class="unit">mmHg</div>
-        <div class="status">● NORMAL</div>
-    </div>
-    <div class="monitor-card-1" onclick="changeBileTitle('Hepatic Arterial Flow')">
-        <h2>Hepatic Arterial Flow</h2>
-        <div class="reading" id="hepatic-flow">100</div>
-        <div class="unit">mL/min</div>
-        <div class="status">● NORMAL</div>
-    </div>
-    <div class="monitor-card-1" onclick="changeBileTitle('Portal Venous Pressure')">
-        <h2>Portal Venous Pressure</h2>
-        <div class="reading" id="portal-pressure">12</div>
-        <div class="unit">mmHg</div>
-        <div class="status" style="color:crimson">● CRITICAL</div>
-    </div>
-    <div class="monitor-card-1" onclick="changeBileTitle('Portal Venous Flow')">
-        <h2>Portal Venous Flow</h2>
-        <div class="reading" id="portal-flow">500</div>
-        <div class="unit">mL/min</div>
-        <div class="status" style="color:crimson">● CRITICAL</div>
-    </div>
-    <div class="monitor-card-1" onclick="changeBileTitle('Oxygen Levels')">
-        <h2>Oxygen Levels</h2>
-        <div class="reading" id="oxygen-levels">98</div>
-        <div class="unit">kPa</div>
-        <div class="status">● NORMAL</div>
-    </div>
-    <div class="monitor-card-1" onclick="changeBileTitle('CO2 Levels')">
-        <h2>CO2 Levels</h2>
-        <div class="reading" id="co2-levels">5.4</div>
-        <div class="unit">kPa</div>
-        <div class="status">● NORMAL</div>
-    </div>
-    <div class="monitor-card-1" onclick="changeBileTitle('Liver Temperature')">
-        <h2>Liver Temperature</h2>
-        <div class="reading" id="liver-temperature">37</div>
-        <div class="unit">°C</div>
-        <div class="status">● NORMAL</div>
-    </div>
-    <div class="monitor-card-1" onclick="changeBileTitle('Perfusate pH')">
-        <h2>Perfusate pH</h2>
-        <div class="reading" id="perfusate-ph">7.4</div>
-        <div class="unit">pH</div>
-        <div class="status">● NORMAL</div>
-    </div>
-
-    <div class="monitor-card-3" id="bile-card" >
-        <h2 id="bile-title">Bile Production</h2>
-        <div class="reading" id="bile-production">100</div>
-        <div class="unit" id="bile-unit"></div>
-        <div class="status">● MONITORING</div>
-    </div>
-
-    <div class="monitor-card-2" style="grid-column: span 3; justify-self: center;">
-        <h2>System Status</h2>
-        <div class="reading" id="system-status">ACTIVE</div>
-        <div class="unit">Mode: On</div>
-        <div class="status">● NORMAL</div>
-    </div>
-    </div>
-
-    <script>
-        // NEW FUNCTION: Changes the title of the Bile Production card
-        function changeBileTitle(newTitle) {
-            document.getElementById('bile-title').innerText = newTitle;
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LiverProTECHt Dashboard</title>
+        <style>
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            background-color: #f0f2f5; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        function updateData() {
-            fetch('/data')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('hepatic-pressure').innerText = data.hepatic_pressure;
-                    document.getElementById('hepatic-flow').innerText = data.hepatic_flow;
-                    document.getElementById('portal-pressure').innerText = data.portal_pressure;
-                    document.getElementById('portal-flow').innerText = data.portal_flow;
-                    document.getElementById('oxygen-levels').innerText = data.oxygen_levels;
-                    document.getElementById('co2-levels').innerText = data.co2_levels;
-                    document.getElementById('liver-temperature').innerText = data.liver_temperature;
-                    document.getElementById('perfusate-ph').innerText = data.perfusate_ph;
-                    document.getElementById('bile-production').innerText = data.bile_production;
-                    document.getElementById('system-status').innerText = data.system_status;
-                })
-                .catch(err => console.log("Waiting for ESP32..."));
+        .dashboard-grid {
+            display: grid;
+            justify-content: center;
+            grid-template-columns: repeat(4, 300px); 
+            gap: 20px; 
+            max-width: 1300px;
         }
 
-        setInterval(updateData, 1000);
-    </script>
-</body>
-</html>
+        /* Standard Cards (Middle 8) */
+        .monitor-card-1 {
+            background-color: #ffffff;
+            width: 300px;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 8px solid #007AFF;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.1s;
+            box-sizing: border-box;
+        }
+
+        .monitor-card-1:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); }
+        .monitor-card-1:active { transform: translateY(0px); background-color: #f9f9f9; }
+
+        /* Top Card (System Status) */
+        .monitor-card-2 {
+            background-color: #ffffff;
+            grid-column: 1 / -1; 
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 8px solid #27ae60;
+            box-sizing: border-box;
+            width: 100%;
+        }
+
+        /* Bottom Card (Dynamic Focus Box) */
+        .monitor-card-3 {
+            background-color: #ffffff;
+            grid-column: 1 / -1; 
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 8px solid #bb00ff;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 400px;
+            margin-top: 10px;
+        }
+
+        h2 { margin: 0; color: #444; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .reading { font-size: 3.5rem; font-weight: bold; color: #222; margin: 15px 0; }
+        .unit { font-size: 1.2rem; color: #888; }
+        .status { margin-top: 15px; font-size: 0.8rem; color: #27ae60; font-weight: 600; }
+        
+        #focus-title { color: #bb00ff; font-weight: bold; font-size: 1.8rem; }
+    </style>
+    </head>
+    <body>
+        <div class="dashboard-grid">
+            
+            <div class="monitor-card-2">
+                <h2>System Status</h2>
+                <div class="reading" id="system-status" style="font-size: 2rem;">ACTIVE</div>
+                <div class="unit">Mode: Normothermic Perfusion</div>
+                <div class="status">● SYSTEM NOMINAL</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Pressure', 'mmHg', 'hepatic_pressure')">
+                <h2>Hepatic Arterial Pressure</h2>
+                <div class="reading" id="hepatic-pressure">--</div>
+                <div class="unit">mmHg</div>
+                <div class="status">● NORMAL</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Flow', 'mL/min', 'hepatic_flow')">
+                <h2>Hepatic Arterial Flow</h2>
+                <div class="reading" id="hepatic-flow">--</div>
+                <div class="unit">mL/min</div>
+                <div class="status">● NORMAL</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure')">
+                <h2>Portal Venous Pressure</h2>
+                <div class="reading" id="portal-pressure">--</div>
+                <div class="unit">mmHg</div>
+                <div class="status" style="color:crimson">● MONITOR</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('Portal Venous Flow', 'mL/min', 'portal_flow')">
+                <h2>Portal Venous Flow</h2>
+                <div class="reading" id="portal-flow">--</div>
+                <div class="unit">mL/min</div>
+                <div class="status" style="color:crimson">● MONITOR</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('Oxygen Levels', 'kPa', 'oxygen_levels')">
+                <h2>Oxygen Levels</h2>
+                <div class="reading" id="oxygen-levels">--</div>
+                <div class="unit">kPa</div>
+                <div class="status">● NORMAL</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('CO2 Levels', 'kPa', 'co2_levels')">
+                <h2>CO2 Levels</h2>
+                <div class="reading" id="co2-levels">--</div>
+                <div class="unit">kPa</div>
+                <div class="status">● NORMAL</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('Liver Temperature', '°C', 'liver_temperature')">
+                <h2>Liver Temperature</h2>
+                <div class="reading" id="liver-temperature">--</div>
+                <div class="unit">°C</div>
+                <div class="status">● NORMAL</div>
+            </div>
+
+            <div class="monitor-card-1" onclick="changeFocus('Perfusate pH', 'pH', 'perfusate_ph')">
+                <h2>Perfusate pH</h2>
+                <div class="reading" id="perfusate-ph">--</div>
+                <div class="unit">pH</div>
+                <div class="status">● NORMAL</div>
+            </div>
+
+            <div class="monitor-card-3" id="focus-card">
+            <h2 id="focus-title">Liver, Laugh Love, Liver</h2>
+            <div class="reading" id="focus-reading" style="font-size: 2.5rem;">Liver ProTECHt</div>
+            <div class="unit" id="focus-unit"></div>
+            <div class="status" id="focus-status"></div>
+        </div>
+
+        </div>
+
+        <script>
+        // Track which sensor data key to display. 
+    // Set to null initially so it doesn't try to overwrite your welcome text immediately.
+    let currentFocusKey = null;
+
+            function changeFocus(newTitle, newUnit, dataKey) {
+        // 1. Update the Title and Unit
+        document.getElementById('focus-title').innerText = newTitle;
+        document.getElementById('focus-unit').innerText = newUnit;
+        
+        // 2. Update the Status text
+        document.getElementById('focus-status').innerText = "● MONITORING " + newTitle.toUpperCase();
+        
+        // 3. Reset font size for numbers and show loading
+        const readingElement = document.getElementById('focus-reading');
+        readingElement.style.fontSize = "3.5rem"; 
+        readingElement.innerText = "--";
+
+        currentFocusKey = dataKey;
+    }
+
+            function updateData() {
+        fetch('/data')
+            .then(response => response.json())
+            .then(data => {
+                // ... (Your other 8 small card updates go here) ...
+                document.getElementById('hepatic-pressure').innerText = data.hepatic_pressure;
+                document.getElementById('hepatic-flow').innerText = data.hepatic_flow;
+                document.getElementById('portal-pressure').innerText = data.portal_pressure;
+                document.getElementById('portal-flow').innerText = data.portal_flow;
+                document.getElementById('oxygen-levels').innerText = data.oxygen_levels;
+                document.getElementById('co2-levels').innerText = data.co2_levels;
+                document.getElementById('liver-temperature').innerText = data.liver_temperature;
+                document.getElementById('perfusate-ph').innerText = data.perfusate_ph;
+                document.getElementById('system-status').innerText = data.system_status;
+
+                // Only update the big box if a user has actually clicked a button
+                if (currentFocusKey && data[currentFocusKey] !== undefined) {
+                    document.getElementById('focus-reading').innerText = data[currentFocusKey];
+                }
+            })
+            .catch(err => console.log("Waiting for ESP32..."));
+    }
+
+            // Run update every second
+            setInterval(updateData, 1000);
+        </script>
+    </body>
+    </html>
