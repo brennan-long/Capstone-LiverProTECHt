@@ -99,7 +99,7 @@
                 <div class="status">● NORMAL</div>
             </div>
 
-            <div class="monitor-card-1" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure')">
+            <div class="monitor-card-1" style="background-color: #ffebee;" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure')">
                 <h2>Portal Venous Pressure</h2>
                 <div class="reading" id="portal-pressure">--</div>
                 <div class="unit">mmHg</div>
@@ -152,8 +152,8 @@
 
         <script>
         // Track which sensor data key to display. 
-    // Set to null initially so it doesn't try to overwrite your welcome text immediately.
-    let currentFocusKey = null;
+        // Set to null initially so it doesn't try to overwrite your welcome text immediately.
+        let currentFocusKey = null;
 
             function changeFocus(newTitle, newUnit, dataKey) {
         // 1. Update the Title and Unit
