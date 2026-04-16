@@ -32,12 +32,22 @@
             text-align: center;
             border-top: 8px solid #007AFF;
             cursor: pointer;
-            transition: transform 0.1s, box-shadow 0.1s;
+            transition: all 0.3s ease;
             box-sizing: border-box;
         }
 
-        .monitor-card-1:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); }
-        .monitor-card-1:active { transform: translateY(0px); background-color: #f9f9f9; }
+        /* Alert State & Flash Animation */
+        .alert-active {
+            background-color: #ffebee !important;
+            border-top-color: #ff1744 !important;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+            50% { box-shadow: 0 0 20px rgba(255, 23, 68, 0.6); background-color: #ffcdd2; }
+            100% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); }
+        }
 
         .monitor-card-2 {
             background-color: #ffffff;
@@ -51,7 +61,6 @@
             width: 100%;
         }
 
-        /* Expanded Focus Box to hold Chart */
         .monitor-card-3 {
             background-color: #ffffff;
             grid-column: 1 / -1; 
@@ -71,18 +80,21 @@
 
         .focus-container { display: flex; width: 100%; justify-content: space-around; align-items: center; }
         .focus-stats { flex: 1; }
-        .focus-graph { flex: 2; padding: 20px; background: #fafafa; border-radius: 15px; margin-left: 20px;}
+        .focus-graph { flex: 2; height: 350px; padding: 20px; background: #fafafa; border-radius: 15px; margin-left: 20px;}
 
         h2 { margin: 0; color: #444; font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; }
         .reading { font-size: 3.5rem; font-weight: bold; color: #222; margin: 10px 0; }
         .unit { font-size: 1.2rem; color: #888; }
         .status { margin-top: 10px; font-size: 0.8rem; color: #27ae60; font-weight: 600; }
+        
+        /* Focus specific alerts */
+        .text-alert { color: #ff1744 !important; }
+        
         #focus-title { color: #bb00ff; font-weight: bold; font-size: 1.6rem; }
     </style>
 </head>
 <body>
     <div class="dashboard-grid">
-        
         <div class="monitor-card-2">
             <h2>System Status</h2>
             <div class="reading" id="system-status" style="font-size: 2rem;">ACTIVE</div>
@@ -90,53 +102,53 @@
             <div class="status" id="global-status">● SYSTEM NORMAL</div>
         </div>
 
-        <div class="monitor-card-1" onclick="changeFocus('Portal Venous Flow', 'mL/min', 'portal_flow')">
+        <div id="card-portal_flow" class="monitor-card-1" onclick="changeFocus('Portal Venous Flow', 'mL/min', 'portal_flow')">
             <h2>Portal Venous Flow</h2>
             <div class="reading" id="portal-flow">--</div>
             <div class="unit">mL/min</div>
-            <div class="status">● NORMAL</div>
+            <div id="status-portal_flow" class="status">● NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure')">
+        <div id="card-portal_pressure" class="monitor-card-1" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure')">
             <h2>Portal Venous Pressure</h2>
             <div class="reading" id="portal-pressure">--</div>
             <div class="unit">mmHg</div>
-            <div class="status">● MONITOR</div>
+            <div id="status-portal_pressure" class="status">● NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Flow', 'mL/min', 'hepatic_flow')">
+        <div id="card-hepatic_flow" class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Flow', 'mL/min', 'hepatic_flow')">
             <h2>Hepatic Arterial Flow</h2>
             <div class="reading" id="hepatic-flow">--</div>
             <div class="unit">mL/min</div>
-            <div class="status">● NORMAL</div>
+            <div id="status-hepatic_flow" class="status">● NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Pressure', 'mmHg', 'hepatic_pressure')">
+        <div id="card-hepatic_pressure" class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Pressure', 'mmHg', 'hepatic_pressure')">
             <h2>Hepatic Arterial Pressure</h2>
             <div class="reading" id="hepatic-pressure">--</div>
             <div class="unit">mmHg</div>
-            <div class="status">● NORMAL</div>
+            <div id="status-hepatic_pressure" class="status">● NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Liver Temperature', '°C', 'liver_temperature')">
+        <div id="card-liver_temperature" class="monitor-card-1" onclick="changeFocus('Liver Temperature', '°C', 'liver_temperature')">
             <h2>Liver Temperature</h2>
             <div class="reading" id="liver-temperature">--</div>
             <div class="unit">°C</div>
-            <div class="status">● NORMAL</div>
+            <div id="status-liver_temperature" class="status">● NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Perfusate pH', 'pH', 'perfusate_ph')">
+        <div id="card-perfusate_ph" class="monitor-card-1" onclick="changeFocus('Perfusate pH', 'pH', 'perfusate_ph')">
             <h2>Perfusate pH</h2>
             <div class="reading" id="perfusate-ph">--</div>
             <div class="unit">pH</div>
-            <div class="status">● NORMAL</div>
+            <div id="status-perfusate_ph" class="status">● NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Oxygen Levels', 'kPa', 'oxygen_levels')">
+        <div id="card-oxygen_levels" class="monitor-card-1" onclick="changeFocus('Oxygen Levels', 'kPa', 'oxygen_levels')">
             <h2>Oxygen Levels</h2>
             <div class="reading" id="oxygen-levels">--</div>
             <div class="unit">kPa</div>
-            <div class="status">● NORMAL</div>
+            <div id="status-oxygen_levels" class="status">● NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('CO2 Levels', 'kPa', 'co2_levels')">
+        <div id="card-co2_levels" class="monitor-card-1" onclick="changeFocus('CO2 Levels', 'kPa', 'co2_levels')">
             <h2>CO2 Levels</h2>
             <div class="reading" id="co2-levels">--</div>
             <div class="unit">kPa</div>
-            <div class="status">● NORMAL</div>
+            <div id="status-co2_levels" class="status">● NORMAL</div>
         </div>
 
         <div class="monitor-card-3" id="focus-card">
@@ -157,38 +169,47 @@
     <script>
         let currentFocusKey = null;
         let chart;
-        const MAX_DATA_POINTS = 20; // Last 20 seconds of data
-        
-        // Data storage for the chart
-        let dataHistory = {
-            labels: [],
-            values: []
+        let globalCounter = 0;
+        let focusStartTime = 0;
+        const MAX_DATA_POINTS = 20; 
+
+        // CRITICAL RANGES (Adjust these for your specific hardware limits)
+        const thresholds = {
+            portal_flow: { min: 420, max: 480 },
+            portal_pressure: { min: 8, max: 12 },
+            hepatic_flow: { min: 110, max: 135 },
+            hepatic_pressure: { min: 90, max: 105 },
+            liver_temperature: { min: 4.0, max: 4.5 },
+            perfusate_ph: { min: 7.35, max: 7.42 },
+            oxygen_levels: { min: 94, max: 100 },
+            co2_levels: { min: 5.0, max: 5.5 }
         };
 
-        // 1. Initialize the Chart
         function initChart() {
             const ctx = document.getElementById('liveChart').getContext('2d');
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: dataHistory.labels,
+                    labels: [],
                     datasets: [{
-                        label: 'Live Reading',
-                        data: dataHistory.values,
+                        label: 'Reading',
+                        data: [],
                         borderColor: '#bb00ff',
                         backgroundColor: 'rgba(187, 0, 255, 0.1)',
+                        // Function to color points differently based on thresholds
+                        pointBackgroundColor: [], 
+                        pointBorderColor: [],
                         fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 2
+                        tension: 0.3,
+                        borderWidth: 3
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: false, grid: { color: '#eee' } },
-                        x: { display: false }
+                        y: { beginAtZero: false, title: { display: true, text: 'Value' } },
+                        x: { display: true, title: { display: true, text: 'Time Elapsed' } }
                     },
                     plugins: { legend: { display: false } }
                 }
@@ -199,70 +220,113 @@
             document.getElementById('focus-title').innerText = newTitle;
             document.getElementById('focus-unit').innerText = newUnit;
             document.getElementById('focus-status').innerText = "● MONITORING " + newTitle.toUpperCase();
+            document.getElementById('focus-reading').style.fontSize = "3.5rem"; 
             
-            const readingElement = document.getElementById('focus-reading');
-            readingElement.style.fontSize = "3.5rem"; 
-            readingElement.innerText = "--";
-
             currentFocusKey = dataKey;
+            focusStartTime = globalCounter; 
             
-            // Reset Chart for new parameter
-            dataHistory.labels = [];
-            dataHistory.values = [];
-            chart.data.labels = dataHistory.labels;
-            chart.data.datasets[0].data = dataHistory.values;
+            chart.data.labels = [];
+            chart.data.datasets[0].data = [];
+            chart.data.datasets[0].pointBackgroundColor = [];
+            chart.data.datasets[0].pointBorderColor = [];
+            chart.options.scales.y.title.text = newUnit;
             chart.update();
+
+            updateData(true); 
         }
 
-        function updateData() {
-            // Realistic Mock Data for when ESP32 is offline
-            // In C++ (Arduino), generate similar realistic JSON
-            const mockData = {
-                portal_flow: (450 + Math.random() * 50).toFixed(0),
-                portal_pressure: (10 + Math.random() * 4).toFixed(1),
-                hepatic_flow: (120 + Math.random() * 20).toFixed(0),
-                hepatic_pressure: (95 + Math.random() * 10).toFixed(0),
-                liver_temperature: (4.1 + Math.random() * 0.5).toFixed(1), // Realistic Hypothermic temp
-                perfusate_ph: (7.35 + Math.random() * 0.1).toFixed(2),
-                oxygen_levels: (95 + Math.random() * 3).toFixed(1),
-                co2_levels: (5.2 + Math.random() * 0.4).toFixed(1),
-                system_status: "ACTIVE"
+        function checkAlerts(key, val) {
+            const range = thresholds[key];
+            const card = document.getElementById('card-' + key);
+            const statusText = document.getElementById('status-' + key);
+            const isAlert = val < range.min || val > range.max;
+
+            if (isAlert) {
+                card.classList.add('alert-active');
+                statusText.innerText = "● ALERT: OUT OF RANGE";
+                statusText.style.color = "#ff1744";
+            } else {
+                card.classList.remove('alert-active');
+                statusText.innerText = "● NORMAL";
+                statusText.style.color = "#27ae60";
+            }
+            return isAlert;
+        }
+
+        function updateData(forceUpdate = false) {
+            if (!forceUpdate) globalCounter++;
+
+            const isMedium = (globalCounter % 5 === 0);
+            const isSlow = (globalCounter % 10 === 0);
+
+            // Mock Data Generator
+            const data = {
+                portal_flow: (415 + Math.random() * 70).toFixed(0), // Designed to trigger some alerts
+                portal_pressure: (7 + Math.random() * 6).toFixed(1),
+                hepatic_flow: (105 + Math.random() * 35).toFixed(0),
+                hepatic_pressure: (85 + Math.random() * 25).toFixed(0),
+                system_status: "ACTIVE",
+                oxygen_levels: (93 + Math.random() * 5).toFixed(1),
+                co2_levels: (4.8 + Math.random() * 1).toFixed(1),
+                liver_temperature: (3.8 + Math.random() * 1).toFixed(1),
+                perfusate_ph: (7.30 + Math.random() * 0.15).toFixed(2)
             };
 
-            // Use fetch for real ESP32, or mockData for testing
-            // fetch('/data').then(res => res.json()).then(data => { ... logic ... })
-            
-            const data = mockData; 
-
-            // Update Small Cards
-            Object.keys(data).forEach(key => {
-                const el = document.getElementById(key.replace('_', '-'));
-                if(el) el.innerText = data[key];
+            // Process all cards and check for alerts
+            Object.keys(thresholds).forEach(key => {
+                const val = parseFloat(data[key]);
+                const displayId = key.replace('_', '-');
+                document.getElementById(displayId).innerText = data[key];
+                checkAlerts(key, val);
             });
 
-            // Update Focus Box & Chart
+            // Graph Logic
             if (currentFocusKey && data[currentFocusKey] !== undefined) {
-                const newVal = parseFloat(data[currentFocusKey]);
-                document.getElementById('focus-reading').innerText = newVal;
+                const fastKeys = ['portal_flow', 'portal_pressure', 'hepatic_flow', 'hepatic_pressure'];
+                const mediumKeys = ['oxygen_levels', 'co2_levels'];
+                const slowKeys = ['liver_temperature', 'perfusate_ph'];
 
-                // Update Chart Data
-                const now = new Date().toLocaleTimeString();
-                dataHistory.labels.push(now);
-                dataHistory.values.push(newVal);
+                let shouldAddPoint = forceUpdate;
+                if (fastKeys.includes(currentFocusKey)) shouldAddPoint = true;
+                if (mediumKeys.includes(currentFocusKey) && isMedium) shouldAddPoint = true;
+                if (slowKeys.includes(currentFocusKey) && isSlow) shouldAddPoint = true;
 
-                // Keep only last N points
-                if (dataHistory.labels.length > MAX_DATA_POINTS) {
-                    dataHistory.labels.shift();
-                    dataHistory.values.shift();
+                if (shouldAddPoint) {
+                    const newVal = parseFloat(data[currentFocusKey]);
+                    const readingEl = document.getElementById('focus-reading');
+                    readingEl.innerText = newVal;
+
+                    const isAlert = newVal < thresholds[currentFocusKey].min || newVal > thresholds[currentFocusKey].max;
+
+                    // Style Focus Reading based on alert
+                    if (isAlert) { readingEl.classList.add('text-alert'); } 
+                    else { readingEl.classList.remove('text-alert'); }
+
+                    // Time logic
+                    const elapsed = globalCounter - focusStartTime;
+                    const timeLabel = (elapsed < 60) ? elapsed + "s" : (elapsed / 60).toFixed(1) + "m";
+                    
+                    chart.data.labels.push(timeLabel);
+                    chart.data.datasets[0].data.push(newVal);
+                    
+                    // COLOR THE POINT: Red-Orange if alert, Purple if normal
+                    chart.data.datasets[0].pointBackgroundColor.push(isAlert ? "#ff5722" : "#bb00ff");
+                    chart.data.datasets[0].pointBorderColor.push(isAlert ? "#ff5722" : "#bb00ff");
+
+                    if (chart.data.labels.length > MAX_DATA_POINTS) {
+                        chart.data.labels.shift();
+                        chart.data.datasets[0].data.shift();
+                        chart.data.datasets[0].pointBackgroundColor.shift();
+                        chart.data.datasets[0].pointBorderColor.shift();
+                    }
+                    chart.update('none');
                 }
-
-                chart.update('none'); // Update without animation for performance
             }
         }
 
         window.onload = () => {
             initChart();
-            setInterval(updateData, 1000); // 1Hz update rate is realistic for medical vitals
+            setInterval(() => updateData(false), 1000); 
         };
     </script>
 </body>
