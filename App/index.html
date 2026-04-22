@@ -45,7 +45,6 @@
             width: 95%;
         }
 
-        /* Base Card Style */
         .monitor-card-1 {
             background: white;
             padding: 30px 10px;
@@ -60,12 +59,22 @@
             border-bottom: 2px solid transparent;
         }
 
-        /* THE VISUAL INDICATOR: Active Card Style */
         .monitor-card-1.selected {
-            border-color: #bb00ff; /* Purple border all around */
+            border-color: #bb00ff;
             box-shadow: 0 0 20px rgba(187, 0, 255, 0.3);
-            transform: scale(1.02);
             background-color: #fdfaff;
+            transform: translateY(-5px);
+        }
+
+        .monitor-card-1.alert-active {
+            border-top-color: #ff1744 !important;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { background-color: #fff; }
+            50% { background-color: #ffebee; box-shadow: 0 0 20px rgba(255, 23, 68, 0.4); }
+            100% { background-color: #fff; }
         }
 
         .monitor-card-2 {
@@ -107,12 +116,11 @@
         .unit { font-size: 1.1rem; color: #999; margin-top: -5px; }
         .status { font-size: 0.75rem; color: #22c55e; font-weight: 700; margin-top: 8px; }
 
-        /* RESET TRENDS BUTTON STYLE */
         .clear-btn {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: #ff4d4d; /* High visibility red */
+            background: #ff4d4d;
             border: none;
             padding: 10px 20px;
             border-radius: 10px;
@@ -123,8 +131,7 @@
             box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3);
             transition: 0.2s;
         }
-        .clear-btn:hover { background: #cc0000; transform: scale(1.05); }
-        .clear-btn:active { transform: scale(0.95); }
+        .clear-btn:hover { background: #cc0000; }
 
         #welcome-text { font-size: 1.5rem; color: #bb00ff; font-weight: bold; text-align: center; width: 100%; margin-top: 100px; }
     </style>
@@ -143,52 +150,52 @@
             <h2>System Status</h2>
             <div class="reading" style="font-size: 2.2rem;">ACTIVE</div>
             <div style="color: #666; font-size: 0.9rem;">Mode: Hypothermic Perfusion</div>
-            <div class="status">● LIVE: SYSTEM NORMAL</div>
+            <div class="status" id="global-status">● LIVE: SYSTEM NORMAL</div>
         </div>
 
-        <div class="monitor-card-1" onclick="changeFocus('Portal Venous Flow', 'mL/min', 'portal_flow', this)">
+        <div id="card-portal_flow" class="monitor-card-1" onclick="changeFocus('Portal Venous Flow', 'mL/min', 'portal_flow', this)">
             <h2>Portal Venous Flow</h2>
             <div class="reading" id="portal-flow">--</div>
             <div class="unit">mL/min</div>
             <div class="status">● LIVE: NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure', this)">
+        <div id="card-portal_pressure" class="monitor-card-1" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure', this)">
             <h2>Portal Venous Pressure</h2>
             <div class="reading" id="portal-pressure">--</div>
             <div class="unit">mmHg</div>
             <div class="status">● LIVE: NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Flow', 'mL/min', 'hepatic_flow', this)">
+        <div id="card-hepatic_flow" class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Flow', 'mL/min', 'hepatic_flow', this)">
             <h2>Hepatic Arterial Flow</h2>
             <div class="reading" id="hepatic-flow">--</div>
             <div class="unit">mL/min</div>
             <div class="status">● LIVE: NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Pressure', 'mmHg', 'hepatic_pressure', this)">
+        <div id="card-hepatic_pressure" class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Pressure', 'mmHg', 'hepatic_pressure', this)">
             <h2>Hepatic Arterial Pressure</h2>
             <div class="reading" id="hepatic-pressure">--</div>
             <div class="unit">mmHg</div>
             <div class="status">● LIVE: NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Liver Temperature', '°C', 'liver_temperature', this)">
+        <div id="card-liver_temperature" class="monitor-card-1" onclick="changeFocus('Liver Temperature', '°C', 'liver_temperature', this)">
             <h2>Liver Temperature</h2>
             <div class="reading" id="liver-temperature">--</div>
             <div class="unit">°C</div>
             <div class="status">● LIVE: NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Perfusate pH', 'pH', 'perfusate_ph', this)">
+        <div id="card-perfusate_ph" class="monitor-card-1" onclick="changeFocus('Perfusate pH', 'pH', 'perfusate_ph', this)">
             <h2>Perfusate pH</h2>
             <div class="reading" id="perfusate-ph">--</div>
             <div class="unit">pH</div>
             <div class="status">● LIVE: NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('Oxygen Levels', 'kPa', 'oxygen_levels', this)">
+        <div id="card-oxygen_levels" class="monitor-card-1" onclick="changeFocus('Oxygen Levels', 'kPa', 'oxygen_levels', this)">
             <h2>Oxygen Levels</h2>
             <div class="reading" id="oxygen-levels">--</div>
             <div class="unit">kPa</div>
             <div class="status">● LIVE: NORMAL</div>
         </div>
-        <div class="monitor-card-1" onclick="changeFocus('CO2 Levels', 'kPa', 'co2_levels', this)">
+        <div id="card-co2_levels" class="monitor-card-1" onclick="changeFocus('CO2 Levels', 'kPa', 'co2_levels', this)">
             <h2>CO2 Levels</h2>
             <div class="reading" id="co2-levels">--</div>
             <div class="unit">kPa</div>
@@ -197,15 +204,13 @@
 
         <div class="monitor-card-3">
             <button class="clear-btn" id="reset-btn" style="display:none;" onclick="resetTrends()">RESET TRENDS</button>
-            
             <div id="welcome-text">DEVICE TELEMETRY READY<br><span style="font-size: 0.9rem; color: #888; font-weight: normal;">Click any parameter above to view live physiological data</span></div>
-
             <div id="graph-ui" class="graph-flex-container" style="display: none;">
                 <div class="focus-value-side">
                     <h2 id="focus-title">--</h2>
                     <div class="reading" id="focus-val">--</div>
                     <div class="unit" id="focus-unit">--</div>
-                    <div class="status">● LIVE TELEMETRY</div>
+                    <div class="status" id="focus-status">● LIVE TELEMETRY</div>
                 </div>
                 <div class="focus-graph-side">
                     <canvas id="mainChart"></canvas>
@@ -223,6 +228,17 @@
             times: []
         };
 
+        const thresholds = {
+            portal_flow: { min: 420, max: 480 },
+            portal_pressure: { min: 8, max: 12 },
+            hepatic_flow: { min: 110, max: 135 },
+            hepatic_pressure: { min: 90, max: 105 },
+            liver_temperature: { min: 4.0, max: 4.5 },
+            perfusate_ph: { min: 7.35, max: 7.42 },
+            oxygen_levels: { min: 94, max: 100 },
+            co2_levels: { min: 5.0, max: 5.5 }
+        };
+
         function initChart() {
             const ctx = document.getElementById('mainChart').getContext('2d');
             chart = new Chart(ctx, {
@@ -236,7 +252,16 @@
                         fill: true,
                         tension: 0.4,
                         borderWidth: 3,
-                        pointRadius: 0
+                        // NEW: Point coloring logic
+                        pointRadius: function(context) {
+                            const val = context.raw;
+                            const range = thresholds[activeKey];
+                            if (!range) return 0;
+                            return (val < range.min || val > range.max) ? 5 : 0;
+                        },
+                        pointBackgroundColor: '#ff1744',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2
                     }]
                 },
                 options: {
@@ -252,13 +277,8 @@
         }
 
         function changeFocus(title, unit, key, element) {
-            // Remove 'selected' class from all cards
-            document.querySelectorAll('.monitor-card-1').forEach(card => {
-                card.classList.remove('selected');
-            });
-            // Add 'selected' class to the clicked card
+            document.querySelectorAll('.monitor-card-1').forEach(card => card.classList.remove('selected'));
             element.classList.add('selected');
-
             document.getElementById('welcome-text').style.display = 'none';
             document.getElementById('graph-ui').style.display = 'flex';
             document.getElementById('reset-btn').style.display = 'block';
@@ -271,6 +291,8 @@
         function resetTrends() {
             if(activeKey) {
                 history[activeKey] = [];
+                // Optional: clear times too if you want a true blank slate
+                // history.times = []; 
                 updateDisplay();
             }
         }
@@ -288,24 +310,56 @@
             history.times.push(ts);
 
             const vals = {
-                portal_flow: (470 + Math.random()*5).toFixed(0),
-                portal_pressure: (10.2).toFixed(1),
-                hepatic_flow: (115 + Math.random()*20).toFixed(0),
-                hepatic_pressure: (98.5 + Math.random()).toFixed(1),
-                liver_temperature: (4.1 + Math.random()*0.3).toFixed(1),
-                perfusate_ph: (7.37 + Math.random()*0.02).toFixed(2),
-                oxygen_levels: (95.5 + Math.random()).toFixed(1),
-                co2_levels: (5.3 + Math.random()*0.2).toFixed(1)
+                portal_flow: 450 + (Math.random() * 10),
+                portal_pressure: 10.2 + (Math.random() * 0.2),
+                hepatic_flow: 122 + (Math.random() * 5),
+                hepatic_pressure: 98.5 + (Math.random() * 0.5),
+                liver_temperature: 4.1 + (Math.random() * 0.1),
+                perfusate_ph: 7.38 + (Math.random() * 0.01),
+                oxygen_levels: 97.0 + (Math.random() * 0.5),
+                co2_levels: 5.2 + (Math.random() * 0.1)
             };
 
+            // ALERT DEMO: Trigger a spike every 15 seconds
+            if (now.getSeconds() % 15 === 0) {
+                const keys = Object.keys(thresholds);
+                const randomKey = keys[Math.floor(Math.random() * keys.length)];
+                vals[randomKey] = thresholds[randomKey].max * 1.2; 
+            }
+
+            let anyAlert = false;
+
             Object.keys(vals).forEach(k => {
-                history[k].push(parseFloat(vals[k]));
-                const el = document.getElementById(k.replace('_', '-'));
-                if(el) el.innerText = vals[k];
+                const val = parseFloat(vals[k]);
+                history[k].push(val);
+                
+                const displayId = k.replace('_', '-');
+                const valEl = document.getElementById(displayId);
+                if(valEl) {
+                    valEl.innerText = val.toFixed(k === 'perfusate_ph' ? 2 : 1);
+                    const card = document.getElementById('card-' + k);
+                    const statusText = card.querySelector('.status');
+                    const range = thresholds[k];
+
+                    if (val < range.min || val > range.max) {
+                        card.classList.add('alert-active');
+                        statusText.innerText = "● ALERT: OUT OF RANGE";
+                        statusText.style.color = "#ff1744";
+                        anyAlert = true;
+                    } else {
+                        card.classList.remove('alert-active');
+                        statusText.innerText = "● LIVE: NORMAL";
+                        statusText.style.color = "#22c55e";
+                    }
+                }
             });
 
+            const globalStat = document.getElementById('global-status');
+            globalStat.innerText = anyAlert ? "● LIVE: PHYSIOLOGICAL ALERT" : "● LIVE: SYSTEM NORMAL";
+            globalStat.style.color = anyAlert ? "#ff1744" : "#22c55e";
+
             if(activeKey) {
-                document.getElementById('focus-val').innerText = vals[activeKey];
+                document.getElementById('focus-val').innerText = parseFloat(vals[activeKey]).toFixed(activeKey === 'perfusate_ph' ? 2 : 1);
                 updateDisplay();
             }
         }
