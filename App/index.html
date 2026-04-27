@@ -5,310 +5,136 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LiverProTECHt Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
     <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            background-color: #f0f2f5; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .brand-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 30px;
-            gap: 15px;
-        }
-
-        .logo-container {
-            width: 100px; height: 100px;
-            background-color: #b59cbe; 
-            border-radius: 20px;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 15px rgba(123, 0, 171, 0.2);
-            overflow: hidden;
-        }
-
+        body { margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .brand-header { display: flex; align-items: center; justify-content: center; margin-bottom: 30px; gap: 15px; }
+        .logo-container { width: 100px; height: 100px; background-color: #b59cbe; border-radius: 20px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(123, 0, 171, 0.2); overflow: hidden; }
         .logo-container img { width: 100%; height: 100%; padding: 5px; object-fit: contain; }
         .brand-name { font-size: 2.5rem; font-weight: 800; color: #222; }
         .brand-name span { color: #bb00ff; }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px; 
-            max-width: 1400px;
-            width: 95%;
-        }
-
-        .monitor-card-1 {
-            background: white;
-            padding: 30px 10px;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            text-align: center;
-            border-top: 8px solid #3b82f6;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 2px solid transparent;
-            border-right: 2px solid transparent;
-            border-bottom: 2px solid transparent;
-        }
-
-        .monitor-card-1.selected {
-            border-color: #bb00ff;
-            box-shadow: 0 0 20px rgba(187, 0, 255, 0.3);
-            background-color: #fdfaff;
-            transform: translateY(-5px);
-        }
-
-        .monitor-card-1.alert-active {
-            border-top-color: #ff1744 !important;
-            animation: pulse-red 1.5s infinite;
-        }
-
-        @keyframes pulse-red {
-            0% { background-color: #fff; }
-            50% { background-color: #ffebee; box-shadow: 0 0 20px rgba(255, 23, 68, 0.4); }
-            100% { background-color: #fff; }
-        }
-
-        .monitor-card-2 {
-            grid-column: 1 / -1;
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            text-align: center;
-            border-top: 8px solid #22c55e;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-            margin-bottom: 10px;
-        }
-
-        .monitor-card-3 {
-            grid-column: 1 / -1;
-            background: white;
-            padding: 40px;
-            border-radius: 25px;
-            border-top: 8px solid #bb00ff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            min-height: 450px;
-            margin-top: 20px;
-            position: relative;
-        }
-
-        .graph-flex-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            width: 100%;
-            height: 100%;
-        }
-
-        .focus-value-side { flex: 1; text-align: center; }
-        .focus-graph-side { flex: 2; height: 380px; background: #fcfcfc; border-radius: 15px; padding: 10px; }
-
-        h2 { margin: 0; color: #555; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
-        .reading { font-size: 3.8rem; font-weight: bold; color: #1a1a1a; margin: 5px 0; }
-        .unit { font-size: 1.1rem; color: #999; margin-top: -5px; }
-        .status { font-size: 0.75rem; color: #22c55e; font-weight: 700; margin-top: 8px; }
-
-        .clear-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: #ff4d4d;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 4px 10px rgba(255, 77, 77, 0.3);
-            transition: 0.2s;
-        }
-        .clear-btn:hover { background: #cc0000; }
-
-        #welcome-text { font-size: 1.5rem; color: #bb00ff; font-weight: bold; text-align: center; width: 100%; margin-top: 100px; }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1400px; width: 95%; }
+        .monitor-card-1 { background: white; padding: 25px 10px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); text-align: center; border-top: 8px solid #3b82f6; cursor: pointer; transition: all 0.3s ease; border-left: 2px solid transparent; border-right: 2px solid transparent; border-bottom: 2px solid transparent; }
+        .monitor-card-1.selected { border-color: #bb00ff; background-color: #fdfaff; transform: translateY(-5px); }
+        .monitor-card-1.alert-active { border-top-color: #ff1744 !important; animation: pulse-red 1.5s infinite; }
+        @keyframes pulse-red { 0% { background-color: #fff; } 50% { background-color: #ffebee; box-shadow: 0 0 15px rgba(255, 23, 68, 0.2); } 100% { background-color: #fff; } }
+        .monitor-card-2 { grid-column: 1 / -1; background: white; padding: 20px; border-radius: 20px; text-align: center; border-top: 8px solid #22c55e; box-shadow: 0 8px 20px rgba(0,0,0,0.08); margin-bottom: 10px; }
+        .monitor-card-3 { grid-column: 1 / -1; background: white; padding: 40px; border-radius: 25px; border-top: 8px solid #bb00ff; box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-height: 450px; margin-top: 10px; position: relative; }
+        .graph-flex-container { display: flex; align-items: center; justify-content: space-around; width: 100%; height: 100%; }
+        .focus-value-side { flex: 1; text-align: center; padding: 20px; }
+        #focus-title { font-size: 2.2rem; color: #333; margin-bottom: 10px; }
+        #focus-val { font-size: 6.5rem; font-weight: 900; color: #1a1a1a; margin: 0; line-height: 1; }
+        #focus-unit { font-size: 2rem; color: #666; font-weight: 500; margin-top: 10px; }
+        .focus-graph-side { flex: 2; height: 420px; background: #fcfcfc; border-radius: 15px; padding: 15px; }
+        .reading { font-size: 3.5rem; font-weight: bold; color: #1a1a1a; margin: 5px 0; }
+        .unit { font-size: 1.1rem; color: #999; }
+        .status { font-size: 0.75rem; font-weight: 700; margin-top: 8px; }
+        .controls { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 10; }
+        .btn { border: none; padding: 12px 20px; border-radius: 10px; cursor: pointer; font-size: 0.75rem; font-weight: bold; color: white; transition: 0.2s; }
+        .btn-reset { background: #ff4d4d; }
+        .btn-toggle { background: #3b82f6; }
+        .btn-toggle.active { background: #22c55e; }
+        #welcome-text { font-size: 2rem; color: #bb00ff; font-weight: bold; text-align: center; width: 100%; margin-top: 120px; }
     </style>
 </head>
 <body>
 
     <div class="brand-header">
-        <div class="logo-container">
-            <img src="https://i.postimg.cc/G2W6TXBb/Liver-Pro-TECHt-Cropped-removebg-preview.png" alt="Logo">
-        </div>
+        <div class="logo-container"><img src="https://i.postimg.cc/G2W6TXBb/Liver-Pro-TECHt-Cropped-removebg-preview.png" alt="Logo"></div>
         <div class="brand-name">Liver <span>ProTECHt</span></div>
     </div>
 
     <div class="dashboard-grid">
         <div class="monitor-card-2">
             <h2>System Status</h2>
-            <div class="reading" style="font-size: 2.2rem;">ACTIVE</div>
-            <div style="color: #666; font-size: 0.9rem;">Mode: Hypothermic Perfusion</div>
-            <div class="status" id="global-status">● LIVE: SYSTEM NORMAL</div>
+            <div id="system-mode-text" class="reading" style="font-size: 2.2rem;">ACTIVE</div>
+            <div class="status" id="global-status" style="color: #22c55e; font-size: 1rem;">● LIVE: SYSTEM NORMAL</div>
         </div>
 
         <div id="card-portal_flow" class="monitor-card-1" onclick="changeFocus('Portal Venous Flow', 'mL/min', 'portal_flow', this)">
-            <h2>Portal Venous Flow</h2>
-            <div class="reading" id="portal-flow">--</div>
-            <div class="unit">mL/min</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>Portal Flow</h2><div class="reading" id="portal-flow">--</div><div class="unit">mL/min</div><div class="status">● LIVE</div>
         </div>
         <div id="card-portal_pressure" class="monitor-card-1" onclick="changeFocus('Portal Venous Pressure', 'mmHg', 'portal_pressure', this)">
-            <h2>Portal Venous Pressure</h2>
-            <div class="reading" id="portal-pressure">--</div>
-            <div class="unit">mmHg</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>Portal Pressure</h2><div class="reading" id="portal-pressure">--</div><div class="unit">mmHg</div><div class="status">● LIVE</div>
         </div>
         <div id="card-hepatic_flow" class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Flow', 'mL/min', 'hepatic_flow', this)">
-            <h2>Hepatic Arterial Flow</h2>
-            <div class="reading" id="hepatic-flow">--</div>
-            <div class="unit">mL/min</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>Hepatic Flow</h2><div class="reading" id="hepatic-flow">--</div><div class="unit">mL/min</div><div class="status">● LIVE</div>
         </div>
         <div id="card-hepatic_pressure" class="monitor-card-1" onclick="changeFocus('Hepatic Arterial Pressure', 'mmHg', 'hepatic_pressure', this)">
-            <h2>Hepatic Arterial Pressure</h2>
-            <div class="reading" id="hepatic-pressure">--</div>
-            <div class="unit">mmHg</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>Hepatic Pressure</h2><div class="reading" id="hepatic-pressure">--</div><div class="unit">mmHg</div><div class="status">● LIVE</div>
         </div>
         <div id="card-liver_temperature" class="monitor-card-1" onclick="changeFocus('Liver Temperature', '°C', 'liver_temperature', this)">
-            <h2>Liver Temperature</h2>
-            <div class="reading" id="liver-temperature">--</div>
-            <div class="unit">°C</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>Liver Temp</h2><div class="reading" id="liver-temperature">--</div><div class="unit">°C</div><div class="status">● LIVE</div>
         </div>
         <div id="card-perfusate_ph" class="monitor-card-1" onclick="changeFocus('Perfusate pH', 'pH', 'perfusate_ph', this)">
-            <h2>Perfusate pH</h2>
-            <div class="reading" id="perfusate-ph">--</div>
-            <div class="unit">pH</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>Perfusate pH</h2><div class="reading" id="perfusate-ph">--</div><div class="unit">pH</div><div class="status">● LIVE</div>
         </div>
         <div id="card-oxygen_levels" class="monitor-card-1" onclick="changeFocus('Oxygen Levels', 'kPa', 'oxygen_levels', this)">
-            <h2>Oxygen Levels</h2>
-            <div class="reading" id="oxygen-levels">--</div>
-            <div class="unit">kPa</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>Oxygen</h2><div class="reading" id="oxygen-levels">--</div><div class="unit">kPa</div><div class="status">● LIVE</div>
         </div>
         <div id="card-co2_levels" class="monitor-card-1" onclick="changeFocus('CO2 Levels', 'kPa', 'co2_levels', this)">
-            <h2>CO2 Levels</h2>
-            <div class="reading" id="co2-levels">--</div>
-            <div class="unit">kPa</div>
-            <div class="status">● LIVE: NORMAL</div>
+            <h2>CO2</h2><div class="reading" id="co2-levels">--</div><div class="unit">kPa</div><div class="status">● LIVE</div>
         </div>
 
         <div class="monitor-card-3">
-            <button class="clear-btn" id="reset-btn" style="display:none;" onclick="resetTrends()">RESET TRENDS</button>
-            <div id="welcome-text">DEVICE TELEMETRY READY<br><span style="font-size: 0.9rem; color: #888; font-weight: normal;">Click any parameter above to view live physiological data</span></div>
+            <div class="controls" id="graph-controls" style="display:none;">
+                <button class="btn btn-toggle" id="view-toggle" onclick="toggleView()">OVERALL TREND: OFF</button>
+                <button class="btn btn-reset" onclick="resetTrends()">RESET TRENDS</button>
+            </div>
+            <div id="welcome-text">DEVICE TELEMETRY READY<br><span style="font-weight: normal; font-size: 1.1rem; color: #888;">Select a parameter above to inspect live data and trends</span></div>
             <div id="graph-ui" class="graph-flex-container" style="display: none;">
                 <div class="focus-value-side">
                     <h2 id="focus-title">--</h2>
-                    <div class="reading" id="focus-val">--</div>
-                    <div class="unit" id="focus-unit">--</div>
-                    <div class="status" id="focus-status">● LIVE TELEMETRY</div>
+                    <div id="focus-val">--</div>
+                    <div id="focus-unit">--</div>
+                    <div class="status" id="focus-status" style="color:#22c55e; font-size: 1.1rem; margin-top: 30px;">● RECORDING LIVE</div>
                 </div>
-                <div class="focus-graph-side">
-                    <canvas id="mainChart"></canvas>
-                </div>
+                <div class="focus-graph-side"><canvas id="mainChart"></canvas></div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- FIREBASE INITIALIZATION ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyC9LfzHibxlj2TfECAx-9u1mXnDGT3avHQ",
+            authDomain: "liverprotecht.firebaseapp.com",
+            databaseURL: "https://liverprotecht-default-rtdb.firebaseio.com",
+            projectId: "liverprotecht",
+            storageBucket: "liverprotecht.firebasestorage.app",
+            messagingSenderId: "707597921528",
+            appId: "1:707597921528:web:1e6ee3fe2b3bd1a2299f0d",
+            measurementId: "G-676JX4ESKT"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         let chart;
         let activeKey = null;
+        let showAllData = false;
+        let alertActiveKey = null;
+        let alertCooldown = 0;
+
         const history = {
-            portal_flow: [], portal_pressure: [], hepatic_flow: [], hepatic_pressure: [],
-            liver_temperature: [], perfusate_ph: [], oxygen_levels: [], co2_levels: [],
-            times: []
+            portal_flow: { data: [], times: [] }, portal_pressure: { data: [], times: [] },
+            hepatic_flow: { data: [], times: [] }, hepatic_pressure: { data: [], times: [] },
+            liver_temperature: { data: [], times: [] }, perfusate_ph: { data: [], times: [] },
+            oxygen_levels: { data: [], times: [] }, co2_levels: { data: [], times: [] }
         };
 
         const thresholds = {
-            portal_flow: { min: 420, max: 480 },
-            portal_pressure: { min: 8, max: 12 },
-            hepatic_flow: { min: 110, max: 135 },
-            hepatic_pressure: { min: 90, max: 105 },
-            liver_temperature: { min: 4.0, max: 4.5 },
-            perfusate_ph: { min: 7.35, max: 7.42 },
-            oxygen_levels: { min: 94, max: 100 },
-            co2_levels: { min: 5.0, max: 5.5 }
+            portal_flow: { min: 420, max: 480 }, portal_pressure: { min: 8, max: 12 },
+            hepatic_flow: { min: 110, max: 135 }, hepatic_pressure: { min: 90, max: 105 },
+            liver_temperature: { min: 4.0, max: 4.5 }, perfusate_ph: { min: 7.35, max: 7.42 },
+            oxygen_levels: { min: 94, max: 100 }, co2_levels: { min: 5.0, max: 5.5 }
         };
 
-        function initChart() {
-            const ctx = document.getElementById('mainChart').getContext('2d');
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [],
-                    datasets: [{
-                        borderColor: '#bb00ff',
-                        backgroundColor: 'rgba(187, 0, 255, 0.1)',
-                        data: [],
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        // NEW: Point coloring logic
-                        pointRadius: function(context) {
-                            const val = context.raw;
-                            const range = thresholds[activeKey];
-                            if (!range) return 0;
-                            return (val < range.min || val > range.max) ? 5 : 0;
-                        },
-                        pointBackgroundColor: '#ff1744',
-                        pointBorderColor: 'white',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { maxTicksLimit: 8 } },
-                        y: { beginAtZero: false }
-                    }
-                }
-            });
-        }
-
-        function changeFocus(title, unit, key, element) {
-            document.querySelectorAll('.monitor-card-1').forEach(card => card.classList.remove('selected'));
-            element.classList.add('selected');
-            document.getElementById('welcome-text').style.display = 'none';
-            document.getElementById('graph-ui').style.display = 'flex';
-            document.getElementById('reset-btn').style.display = 'block';
-            document.getElementById('focus-title').innerText = title;
-            document.getElementById('focus-unit').innerText = unit;
-            activeKey = key;
-            updateDisplay();
-        }
-
-        function resetTrends() {
-            if(activeKey) {
-                history[activeKey] = [];
-                // Optional: clear times too if you want a true blank slate
-                // history.times = []; 
-                updateDisplay();
-            }
-        }
-
-        function updateDisplay() {
-            if(!activeKey) return;
-            chart.data.labels = history.times;
-            chart.data.datasets[0].data = history[activeKey];
-            chart.update('none');
-        }
-
+        // 1. DATA GENERATOR (Sender)
         function tick() {
             const now = new Date();
-            const ts = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0') + ":" + now.getSeconds().toString().padStart(2, '0');
-            history.times.push(ts);
-
             const vals = {
                 portal_flow: 450 + (Math.random() * 10),
                 portal_pressure: 10.2 + (Math.random() * 0.2),
@@ -320,54 +146,125 @@
                 co2_levels: 5.2 + (Math.random() * 0.1)
             };
 
-            // ALERT DEMO: Trigger a spike every 15 seconds
-            if (now.getSeconds() % 15 === 0) {
+            // Alert for 10 seconds every 20 seconds
+            if (now.getSeconds() % 20 === 0 && alertCooldown <= 0) {
                 const keys = Object.keys(thresholds);
-                const randomKey = keys[Math.floor(Math.random() * keys.length)];
-                vals[randomKey] = thresholds[randomKey].max * 1.2; 
+                alertActiveKey = keys[Math.floor(Math.random() * keys.length)];
+                alertCooldown = 10;
             }
 
+            if (alertCooldown > 0) {
+                vals[alertActiveKey] = thresholds[alertActiveKey].max * 1.25;
+                alertCooldown--;
+            } else {
+                alertActiveKey = null;
+            }
+
+            db.ref("live_telemetry").set(vals);
+        }
+
+        // 2. DATA LISTENER (Receiver)
+        db.ref("live_telemetry").on("value", (snapshot) => {
+            const vals = snapshot.val();
+            if (!vals) return;
+
+            const ts = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             let anyAlert = false;
 
             Object.keys(vals).forEach(k => {
-                const val = parseFloat(vals[k]);
-                history[k].push(val);
-                
+                history[k].data.push(vals[k]);
+                history[k].times.push(ts);
+                if (history[k].data.length > 5000) { history[k].data.shift(); history[k].times.shift(); }
+
                 const displayId = k.replace('_', '-');
                 const valEl = document.getElementById(displayId);
-                if(valEl) {
-                    valEl.innerText = val.toFixed(k === 'perfusate_ph' ? 2 : 1);
-                    const card = document.getElementById('card-' + k);
-                    const statusText = card.querySelector('.status');
-                    const range = thresholds[k];
+                if(valEl) valEl.innerText = vals[k].toFixed(k === 'perfusate_ph' ? 2 : 1);
+                
+                const range = thresholds[k];
+                const card = document.getElementById('card-' + k);
+                const statusText = card.querySelector('.status');
 
-                    if (val < range.min || val > range.max) {
-                        card.classList.add('alert-active');
-                        statusText.innerText = "● ALERT: OUT OF RANGE";
-                        statusText.style.color = "#ff1744";
-                        anyAlert = true;
-                    } else {
-                        card.classList.remove('alert-active');
-                        statusText.innerText = "● LIVE: NORMAL";
-                        statusText.style.color = "#22c55e";
-                    }
+                if (range && (vals[k] < range.min || vals[k] > range.max)) {
+                    card.classList.add('alert-active');
+                    statusText.innerText = "● ALERT: OUT OF RANGE";
+                    statusText.style.color = "#ff1744";
+                    anyAlert = true;
+                } else {
+                    card.classList.remove('alert-active');
+                    statusText.innerText = "● LIVE: NORMAL";
+                    statusText.style.color = "#22c55e";
                 }
             });
 
-            const globalStat = document.getElementById('global-status');
-            globalStat.innerText = anyAlert ? "● LIVE: PHYSIOLOGICAL ALERT" : "● LIVE: SYSTEM NORMAL";
-            globalStat.style.color = anyAlert ? "#ff1744" : "#22c55e";
+            document.getElementById('global-status').innerText = anyAlert ? "● LIVE: PHYSIOLOGICAL ALERT" : "● LIVE: SYSTEM NORMAL";
+            document.getElementById('global-status').style.color = anyAlert ? "#ff1744" : "#22c55e";
 
             if(activeKey) {
-                document.getElementById('focus-val').innerText = parseFloat(vals[activeKey]).toFixed(activeKey === 'perfusate_ph' ? 2 : 1);
+                document.getElementById('focus-val').innerText = vals[activeKey].toFixed(activeKey === 'perfusate_ph' ? 2 : 1);
                 updateDisplay();
             }
+        });
+
+        // 3. UI FUNCTIONS
+        function initChart() {
+            const ctx = document.getElementById('mainChart').getContext('2d');
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [{ borderColor: '#bb00ff', backgroundColor: 'rgba(187, 0, 255, 0.1)', data: [], fill: true, tension: 0.3, borderWidth: 3, pointRadius: (ctx) => { const val = ctx.raw; const range = thresholds[activeKey]; return (range && (val < range.min || val > range.max)) ? 6 : 0; }, pointBackgroundColor: '#ff1744', pointBorderColor: 'white', pointBorderWidth: 2 }]},
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, grace: '15%', ticks: { font: { size: 14, weight: 'bold' } } }, x: { ticks: { maxTicksLimit: 10, font: { size: 12 } } } }, animation: false }
+            });
         }
 
-        window.onload = () => {
+        function changeFocus(title, unit, key, element) {
+            if (activeKey === key) { resetToDefault(); return; }
+            document.querySelectorAll('.monitor-card-1').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            document.getElementById('welcome-text').style.display = 'none';
+            document.getElementById('graph-ui').style.display = 'flex';
+            document.getElementById('graph-controls').style.display = 'flex';
+            document.getElementById('focus-title').innerText = title;
+            document.getElementById('focus-unit').innerText = unit;
+            activeKey = key;
             initChart();
-            setInterval(tick, 1000);
-        };
+            updateDisplay();
+        }
+
+        function resetToDefault() {
+            activeKey = null;
+            document.querySelectorAll('.monitor-card-1').forEach(c => c.classList.remove('selected'));
+            document.getElementById('welcome-text').style.display = 'block';
+            document.getElementById('graph-ui').style.display = 'none';
+            document.getElementById('graph-controls').style.display = 'none';
+            if (chart) chart.destroy();
+        }
+
+        function toggleView() {
+            showAllData = !showAllData;
+            const btn = document.getElementById('view-toggle');
+            btn.innerText = showAllData ? "OVERALL TREND: ON" : "OVERALL TREND: OFF";
+            btn.classList.toggle('active');
+            updateDisplay();
+        }
+
+        function resetTrends() {
+            if(activeKey) { history[activeKey].data = []; history[activeKey].times = []; initChart(); updateDisplay(); }
+        }
+
+        function updateDisplay() {
+            if(!activeKey || !chart) return;
+            const h = history[activeKey];
+            if (!showAllData && h.data.length > 50) {
+                chart.data.labels = h.times.slice(-50);
+                chart.data.datasets[0].data = h.data.slice(-50);
+            } else {
+                chart.data.labels = h.times;
+                chart.data.datasets[0].data = h.data;
+            }
+            chart.update('none');
+        }
+
+        window.onload = () => { setInterval(tick, 1000); };
     </script>
 </body>
 </html>
