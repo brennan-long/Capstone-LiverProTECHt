@@ -19,13 +19,11 @@
         
         .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1400px; width: 95%; }
         
-        /* Action Buttons */
         .action-bar { grid-column: 1 / -1; display: flex; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
         .btn-primary { padding: 12px 24px; border-radius: 12px; border: none; background: #bb00ff; color: white; cursor: pointer; font-weight: bold; transition: all 0.2s; }
         .btn-secondary { padding: 12px 24px; border-radius: 12px; border: 2px solid #ff1744; background: transparent; color: #ff1744; cursor: pointer; font-weight: bold; }
         .btn-info { padding: 12px 24px; border-radius: 12px; border: 2px solid #3b82f6; background: white; color: #3b82f6; cursor: pointer; font-weight: bold; display: none; }
         
-        /* New Clear Current Style */
         #btn-clear-current { border-color: #ff9800; color: #ff9800; display: none; }
 
         .btn-primary:hover, .btn-secondary:hover, .btn-info:hover { opacity: 0.8; transform: translateY(-1px); }
@@ -48,8 +46,9 @@
         .unit { font-size: 1.1rem; color: #999; }
         .status { font-size: 0.75rem; font-weight: 700; margin-top: 8px; }
 
-        /* Modal Styles */
+        /* FIXED CSS ERROR HERE */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.7); overflow-y: auto; }
+        
         .modal-content { background-color: white; margin: 5% auto; padding: 30px; border-radius: 25px; width: 90%; max-width: 1200px; position: relative; }
         .close-btn { position: absolute; right: 25px; top: 20px; font-size: 35px; cursor: pointer; color: #666; font-weight: bold; }
         .modal-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px; }
@@ -126,7 +125,6 @@
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyC9LfzHibxlj2TfECAx-9u1mXnDGT3avHQ",
             authDomain: "liverprotecht.firebaseapp.com",
@@ -153,15 +151,15 @@
             oxygen_levels: { data: [], times: [] }, co2_levels: { data: [], times: [] }
         };
 
-       const thresholds = {
-            portal_flow: { min: 1250, max: 1350 },      // Range around 1300
-            portal_pressure: { min: 6, max: 8 },         // Range around 7
-            hepatic_flow: { min: 280, max: 320 },       // Range around 300
-            hepatic_pressure: { min: 55, max: 65 },     // Range around 60
-            liver_temperature: { min: 4.0, max: 4.5 },  // Keeping standard cold storage temp
-            perfusate_ph: { min: 7.35, max: 7.42 },     // Keeping physiological pH
-            oxygen_levels: { min: 75, max: 85 },        // Range around 80
-            co2_levels: { min: 6.5, max: 7.5 }          // Range around 7
+        const thresholds = {
+            portal_flow: { min: 1250, max: 1350 },
+            portal_pressure: { min: 6, max: 8 },
+            hepatic_flow: { min: 280, max: 320 },
+            hepatic_pressure: { min: 55, max: 65 },
+            liver_temperature: { min: 4.0, max: 4.5 },
+            perfusate_ph: { min: 7.35, max: 7.42 },
+            oxygen_levels: { min: 75, max: 85 },
+            co2_levels: { min: 6.5, max: 7.5 }
         };
 
         function tick() {
@@ -200,8 +198,7 @@
             Object.keys(vals).forEach(k => {
                 history[k].data.push(vals[k]);
                 history[k].times.push(ts);
-                if (history[k].data.length > 50) { history[k].data.shift(); history[k].times.shift(); }
-
+                
                 const displayId = k.replace('_', '-');
                 const valEl = document.getElementById(displayId);
                 if(valEl) valEl.innerText = vals[k].toFixed(k === 'perfusate_ph' ? 2 : 1);
@@ -242,7 +239,6 @@
         function changeFocus(title, unit, key, element) {
             const isAlreadySelected = element.classList.contains('selected');
             document.querySelectorAll('.monitor-card-1').forEach(c => c.classList.remove('selected'));
-            
             const singleBtn = document.getElementById('btn-single-trend');
             const clearCurrentBtn = document.getElementById('btn-clear-current');
 
@@ -262,41 +258,39 @@
                 document.getElementById('focus-unit').innerText = unit;
                 activeKey = key;
                 activeTitle = title;
-
                 singleBtn.style.display = 'block';
                 singleBtn.innerText = `View ${title} History`;
                 clearCurrentBtn.style.display = 'block';
                 clearCurrentBtn.innerText = `Clear ${title} Trend`;
-
                 initChart();
             }
         }
 
         function updateDisplay() {
-            if(!activeKey || !chart) return;
-            chart.data.labels = history[activeKey].times;
-            chart.data.datasets[0].data = history[activeKey].data;
-            chart.update('none');
-        }
+            if (!activeKey || !chart) return;
+            const data = history[activeKey].data;
+            const labels = history[activeKey].times;
+            const range = thresholds[activeKey];
 
-        function clearCurrentTrend() {
-            if (!activeKey) return;
-            if (confirm(`Clear all history for ${activeTitle}?`)) {
-                history[activeKey].data = [];
-                history[activeKey].times = [];
-                if (chart) {
-                    chart.data.labels = [];
-                    chart.data.datasets[0].data = [];
-                    chart.update();
-                }
-            }
+            const sliceData = data.slice(-50);
+            const sliceLabels = labels.slice(-50);
+
+            const pointColors = sliceData.map(val => (range && (val < range.min || val > range.max)) ? '#ff1744' : '#bb00ff');
+            const pointRadii = sliceData.map(val => (range && (val < range.min || val > range.max)) ? 5 : 0);
+
+            chart.data.labels = sliceLabels;
+            chart.data.datasets[0].data = sliceData;
+            chart.data.datasets[0].pointBackgroundColor = pointColors;
+            chart.data.datasets[0].pointBorderColor = pointColors;
+            chart.data.datasets[0].pointRadius = pointRadii;
+            chart.update('none');
         }
 
         function showOverallTrends() {
             const container = document.getElementById('modal-charts-container');
             container.innerHTML = '';
             container.className = "modal-grid";
-            document.getElementById('modal-header-text').innerText = "Overall Physiological Trends";
+            document.getElementById('modal-header-text').innerText = "Overall Physiological Trends (Total Session History)";
             document.getElementById('trendsModal').style.display = 'block';
 
             Object.keys(history).forEach(key => {
@@ -306,7 +300,16 @@
                     const ctx = document.getElementById(chartId).getContext('2d');
                     new Chart(ctx, {
                         type: 'line',
-                        data: { labels: history[key].times, datasets: [{ borderColor: '#bb00ff', data: history[key].data, fill: false, tension: 0.3, pointRadius: 0 }] },
+                        data: { 
+                            labels: history[key].times, // NO Slicing: Shows entire data collection
+                            datasets: [{ 
+                                borderColor: '#bb00ff', 
+                                data: history[key].data, // NO Slicing: Shows entire data collection
+                                fill: false, 
+                                tension: 0.1, 
+                                pointRadius: 1 
+                            }] 
+                        },
                         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
                     });
                 }, 50);
@@ -318,7 +321,7 @@
             const container = document.getElementById('modal-charts-container');
             container.innerHTML = '';
             container.className = ""; 
-            document.getElementById('modal-header-text').innerText = `${activeTitle} Detailed History`;
+            document.getElementById('modal-header-text').innerText = `${activeTitle} Full Session History`;
             document.getElementById('trendsModal').style.display = 'block';
 
             const chartId = `single-large-chart`;
@@ -328,10 +331,31 @@
                 const ctx = document.getElementById(chartId).getContext('2d');
                 new Chart(ctx, {
                     type: 'line',
-                    data: { labels: history[activeKey].times, datasets: [{ label: activeTitle, borderColor: '#bb00ff', backgroundColor: 'rgba(187, 0, 255, 0.1)', data: history[activeKey].data, fill: true, tension: 0.3, borderWidth: 4 }] },
+                    data: { 
+                        labels: history[activeKey].times, 
+                        datasets: [{ 
+                            label: activeTitle, 
+                            borderColor: '#bb00ff', 
+                            backgroundColor: 'rgba(187, 0, 255, 0.1)', 
+                            data: history[activeKey].data, 
+                            fill: true, 
+                            tension: 0.1, 
+                            borderWidth: 2,
+                            pointRadius: 2
+                        }] 
+                    },
                     options: { responsive: true, maintainAspectRatio: false }
                 });
             }, 50);
+        }
+
+        function clearCurrentTrend() {
+            if (!activeKey) return;
+            if (confirm(`Clear all history for ${activeTitle}?`)) {
+                history[activeKey].data = [];
+                history[activeKey].times = [];
+                if (chart) { chart.data.labels = []; chart.data.datasets[0].data = []; chart.update(); }
+            }
         }
 
         function clearAllTrends() {
@@ -345,8 +369,7 @@
 
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
-            const mode = urlParams.get('mode');
-            if (mode === 'master') {
+            if (urlParams.get('mode') === 'master') {
                 setInterval(tick, 1000);
                 document.getElementById('system-mode-text').innerText = "ACTIVE (MASTER)";
             } else {
