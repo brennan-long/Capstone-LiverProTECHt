@@ -153,11 +153,15 @@
             oxygen_levels: { data: [], times: [] }, co2_levels: { data: [], times: [] }
         };
 
-        const thresholds = {
-            portal_flow: { min: 420, max: 480 }, portal_pressure: { min: 8, max: 12 },
-            hepatic_flow: { min: 110, max: 135 }, hepatic_pressure: { min: 90, max: 105 },
-            liver_temperature: { min: 4.0, max: 4.5 }, perfusate_ph: { min: 7.35, max: 7.42 },
-            oxygen_levels: { min: 94, max: 100 }, co2_levels: { min: 5.0, max: 5.5 }
+       const thresholds = {
+            portal_flow: { min: 1250, max: 1350 },      // Range around 1300
+            portal_pressure: { min: 6, max: 8 },         // Range around 7
+            hepatic_flow: { min: 280, max: 320 },       // Range around 300
+            hepatic_pressure: { min: 55, max: 65 },     // Range around 60
+            liver_temperature: { min: 4.0, max: 4.5 },  // Keeping standard cold storage temp
+            perfusate_ph: { min: 7.35, max: 7.42 },     // Keeping physiological pH
+            oxygen_levels: { min: 75, max: 85 },        // Range around 80
+            co2_levels: { min: 6.5, max: 7.5 }          // Range around 7
         };
 
         function tick() {
