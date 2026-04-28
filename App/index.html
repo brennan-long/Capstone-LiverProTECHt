@@ -24,6 +24,10 @@
         .btn-primary { padding: 12px 24px; border-radius: 12px; border: none; background: #bb00ff; color: white; cursor: pointer; font-weight: bold; transition: all 0.2s; }
         .btn-secondary { padding: 12px 24px; border-radius: 12px; border: 2px solid #ff1744; background: transparent; color: #ff1744; cursor: pointer; font-weight: bold; }
         .btn-info { padding: 12px 24px; border-radius: 12px; border: 2px solid #3b82f6; background: white; color: #3b82f6; cursor: pointer; font-weight: bold; display: none; }
+        
+        /* New Clear Current Style */
+        #btn-clear-current { border-color: #ff9800; color: #ff9800; display: none; }
+
         .btn-primary:hover, .btn-secondary:hover, .btn-info:hover { opacity: 0.8; transform: translateY(-1px); }
 
         .monitor-card-1 { background: white; padding: 25px 10px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.08); text-align: center; border-top: 8px solid #3b82f6; cursor: pointer; transition: all 0.3s ease; }
@@ -65,6 +69,7 @@
         <div class="action-bar">
             <button class="btn-primary" onclick="showOverallTrends()">View Overall Trends</button>
             <button id="btn-single-trend" class="btn-info" onclick="showSingleTrend()">View Parameter History</button>
+            <button id="btn-clear-current" class="btn-secondary" onclick="clearCurrentTrend()">Clear Current Trend</button>
             <button class="btn-secondary" onclick="clearAllTrends()">Clear All Trends</button>
         </div>
 
@@ -231,22 +236,36 @@
         }
 
         function changeFocus(title, unit, key, element) {
+            const isAlreadySelected = element.classList.contains('selected');
             document.querySelectorAll('.monitor-card-1').forEach(c => c.classList.remove('selected'));
-            element.classList.add('selected');
-            document.getElementById('welcome-text').style.display = 'none';
-            document.getElementById('graph-ui').style.display = 'flex';
-            document.getElementById('focus-title').innerText = title;
-            document.getElementById('focus-unit').innerText = unit;
             
-            activeKey = key;
-            activeTitle = title;
-
-            // Show and update the Single History button
             const singleBtn = document.getElementById('btn-single-trend');
-            singleBtn.style.display = 'block';
-            singleBtn.innerText = `View ${title} History`;
+            const clearCurrentBtn = document.getElementById('btn-clear-current');
 
-            initChart();
+            if (isAlreadySelected) {
+                activeKey = null;
+                activeTitle = "";
+                document.getElementById('welcome-text').style.display = 'block';
+                document.getElementById('graph-ui').style.display = 'none';
+                singleBtn.style.display = 'none';
+                clearCurrentBtn.style.display = 'none';
+                if (chart) { chart.destroy(); chart = null; }
+            } else {
+                element.classList.add('selected');
+                document.getElementById('welcome-text').style.display = 'none';
+                document.getElementById('graph-ui').style.display = 'flex';
+                document.getElementById('focus-title').innerText = title;
+                document.getElementById('focus-unit').innerText = unit;
+                activeKey = key;
+                activeTitle = title;
+
+                singleBtn.style.display = 'block';
+                singleBtn.innerText = `View ${title} History`;
+                clearCurrentBtn.style.display = 'block';
+                clearCurrentBtn.innerText = `Clear ${title} Trend`;
+
+                initChart();
+            }
         }
 
         function updateDisplay() {
@@ -254,6 +273,19 @@
             chart.data.labels = history[activeKey].times;
             chart.data.datasets[0].data = history[activeKey].data;
             chart.update('none');
+        }
+
+        function clearCurrentTrend() {
+            if (!activeKey) return;
+            if (confirm(`Clear all history for ${activeTitle}?`)) {
+                history[activeKey].data = [];
+                history[activeKey].times = [];
+                if (chart) {
+                    chart.data.labels = [];
+                    chart.data.datasets[0].data = [];
+                    chart.update();
+                }
+            }
         }
 
         function showOverallTrends() {
@@ -281,7 +313,7 @@
             if(!activeKey) return;
             const container = document.getElementById('modal-charts-container');
             container.innerHTML = '';
-            container.className = ""; // Remove grid for single large chart
+            container.className = ""; 
             document.getElementById('modal-header-text').innerText = `${activeTitle} Detailed History`;
             document.getElementById('trendsModal').style.display = 'block';
 
