@@ -163,14 +163,14 @@
         function tick() {
             const now = new Date();
             const vals = {
-                portal_flow: 450 + (Math.random() * 10),
-                portal_pressure: 10.2 + (Math.random() * 0.2),
-                hepatic_flow: 122 + (Math.random() * 5),
-                hepatic_pressure: 98.5 + (Math.random() * 0.5),
+                portal_flow: 1300 + (Math.random() * 10),
+                portal_pressure: 7 + (Math.random() * 0.2),
+                hepatic_flow: 300 + (Math.random() * 5),
+                hepatic_pressure: 60 + (Math.random() * 0.5),
                 liver_temperature: 4.1 + (Math.random() * 0.1),
                 perfusate_ph: 7.38 + (Math.random() * 0.01),
-                oxygen_levels: 97.0 + (Math.random() * 0.5),
-                co2_levels: 5.2 + (Math.random() * 0.1)
+                oxygen_levels: 80 + (Math.random() * 0.5),
+                co2_levels: 7 + (Math.random() * 0.1)
             };
 
             if (now.getSeconds() % 20 === 0 && alertCooldown <= 0) {
